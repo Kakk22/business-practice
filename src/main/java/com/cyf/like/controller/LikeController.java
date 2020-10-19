@@ -2,10 +2,10 @@ package com.cyf.like.controller;
 
 import com.cyf.like.service.LikeService;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 /** 点赞控制器
  * @author by cyf
@@ -25,7 +25,27 @@ public class LikeController {
      * @return
      */
     @PostMapping("/doLike")
-    public String doLike(@RequestParam("userId") Long userId, @RequestParam("commentId") Long commentId){
-        return likeService.like(userId,commentId);
+    public void doLike(@RequestParam("userId") Long userId, @RequestParam("commentId") Long commentId){
+        likeService.like(userId,commentId);
+    }
+    /**
+     * 取消点赞功能
+     * @param userId 用户id
+     * @param commentId 评价id
+     * @return
+     */
+    @PostMapping("/unLike")
+    public void unLike(@RequestParam("userId") Long userId, @RequestParam("commentId") Long commentId){
+        likeService.unLike(userId,commentId);
+    }
+
+    /**
+     * 获取指定评价点赞数
+     * @param commentId 评价id
+     * @return
+     */
+    @GetMapping("/count")
+    public Map getLikeCount(@RequestParam("commentId") List<Long> commentId){
+        return likeService.getLikeCount(commentId);
     }
 }
