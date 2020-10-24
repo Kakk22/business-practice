@@ -1,7 +1,9 @@
 package com.cyf.like.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cyf.like.common.RedisConstant;
 import com.cyf.like.entity.Comment;
@@ -65,14 +67,25 @@ public class LikeServiceImpl extends ServiceImpl<LikeMapper, UserLike> implement
      */
     @Override
     public void unLike(Long userId, Long commentId) {
-        // TODO: 2020/10/19 参数校验 只有点过赞才能取消
-
-        Set set = (Set<Long>) redisService.hGet(RedisConstant.USER_LIKE_COMMENT_KEY, String.valueOf(userId));
-        //移除用户点赞的评论
-        set.remove(commentId);
-        redisService.hSet(RedisConstant.USER_LIKE_COMMENT_KEY, String.valueOf(userId), set);
-        //评论总点赞数减1
-        redisService.hDecr(RedisConstant.COMMENT_LIKE_COUNT, String.valueOf(commentId), 1L);
+        Long count = redisService.sRemove(RedisConstant.LIKE_COMMENT_USERID + userId, commentId);
+        if (count > 0){
+            //判断user:like 是否有数据
+            Set set = (Set)redisService.hGet(RedisConstant.USER_LIKE,String.valueOf(userId));
+            if (!CollUtil.isEmpty(set)){
+                if (set.remove(commentId)){
+                    return;
+                }
+            }
+            set = (Set)redisService.hGet(RedisConstant.USER_UNLIKE, String.valueOf(userId));
+            if (CollUtil.isEmpty(set)){
+                set = new HashSet<Long>();
+            }
+            set.add(commentId);
+            //集合为空或者不存在此条记录 则说明取消的是数据库的记录 需记录下来 定时任务删除
+            redisService.hSet(RedisConstant.USER_UNLIKE,String.valueOf(userId),set);
+            //文章总点赞数-1
+            redisService.hDecr(RedisConstant.COMMENT_LIKE_COUNT,String.valueOf(commentId),1L);
+        }
     }
 
 
@@ -86,20 +99,20 @@ public class LikeServiceImpl extends ServiceImpl<LikeMapper, UserLike> implement
     @Override
     public void like(Long userId, Long commentId) {
         //实现逻辑，每个用户对一条评价只能点一次赞
-        //记录用户点赞了哪些评论 key为用户id value set<评价id>
-        //记录评论点赞总数      key为评价id value 为String 存入redis中
-        // TODO: 2020/10/17  参数校验 是否点过赞
-
-
-        Set set = (Set<Long>) redisService.hGet(RedisConstant.USER_LIKE_COMMENT_KEY, String.valueOf(userId));
-        if (CollectionUtil.isEmpty(set)) {
-            set = new HashSet<Long>();
+        //记录用户点赞了哪些评论 key为用户id value set<评价id>         hash结构
+        //记录评论点赞总数      key为评价id value 为String 存入redis中 hash结构
+        Long count = redisService.sAdd(RedisConstant.LIKE_COMMENT_USERID + userId, commentId);
+        if (count > 0 ) {
+            //记录用户点赞哪些评论 key为用户id value为Set<评论id>
+            Set set = (Set) redisService.hGet(RedisConstant.USER_LIKE, String.valueOf(userId));
+            if (CollectionUtil.isEmpty(set)) {
+                set = new HashSet<Long>();
+            }
+            set.add(commentId);
+            redisService.hSet(RedisConstant.USER_LIKE, String.valueOf(userId), set);
+            //记录评论点赞总数
+            redisService.hIncr(RedisConstant.COMMENT_LIKE_COUNT, String.valueOf(commentId), 1L);
         }
-        //记录用户点赞哪些评论 key为用户id value为Set<评论id>
-        set.add(commentId);
-        redisService.hSet(RedisConstant.USER_LIKE_COMMENT_KEY, String.valueOf(userId), set);
-        //记录评论点赞总数
-        redisService.hIncr(RedisConstant.COMMENT_LIKE_COUNT, String.valueOf(commentId), 1L);
     }
 
 
@@ -109,40 +122,59 @@ public class LikeServiceImpl extends ServiceImpl<LikeMapper, UserLike> implement
      * 所以每次只同步到有更新的数据
      * 2小时同步一次
      */
-    @Scheduled(cron = "0 0/10 * * * ?")
+    //@Scheduled(cron = "0 0/1 * * * ? ")
     //@Scheduled(cron = "0 0 0/2 * * ?")
+    @Scheduled(fixedDelay = 300000)
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void asynchronousUpdate() {
-        log.info("time:{},开始执行redis数据持久化到mysql定时任务",DateUtil.now());
+        log.info("time:{},开始执行redis数据持久化到mysql定时任务", DateUtil.now());
         //redis获取评论点赞信息
         Map map = redisService.hGetAll(RedisConstant.COMMENT_LIKE_COUNT);
         if (CollectionUtil.isNotEmpty(map)) {
             List<Comment> commentList = new ArrayList<>();
-            Set<Map.Entry<String, Long>> set = map.entrySet();
-            for (Map.Entry<String, Long> entry : set) {
+            Set<Map.Entry<String, Integer>> set = map.entrySet();
+            for (Map.Entry<String, Integer> entry : set) {
                 Comment comment = new Comment();
                 comment.setId(Long.parseLong(entry.getKey()));
-                comment.setLike(entry.getValue());
+                comment.setLikeCount(entry.getValue());
                 commentList.add(comment);
             }
             //更新评论点赞数
             commentService.updateBatchById(commentList);
         }
-        //redis获取用户喜欢的文章
-        Map likeMap = redisService.hGetAll(RedisConstant.USER_LIKE_COMMENT_KEY);
-        if (CollectionUtil.isNotEmpty(likeMap)) {
-            List<UserLike> userLikes = new ArrayList<>();
-            Set<Map.Entry<String, Long>> entries = likeMap.entrySet();
-            for (Map.Entry<String, Long> entry : entries) {
-                UserLike userLike = new UserLike();
-                userLike.setUserId(Long.parseLong(entry.getKey()));
-                userLike.setCommentId(entry.getValue());
-                userLikes.add(userLike);
+        //redis获取用户喜欢的评论添加进中间表
+        Map likeMap = redisService.hGetAll(RedisConstant.USER_LIKE);
+        if (CollUtil.isNotEmpty(likeMap)) {
+            Set<Map.Entry<String, Set<Long>>> entries = likeMap.entrySet();
+            for (Map.Entry<String, Set<Long>> entry : entries) {
+                for (Long commentId : entry.getValue()) {
+                    UserLike userLike = new UserLike();
+                    userLike.setUserId(Long.parseLong(entry.getKey()));
+                    userLike.setCommentId(commentId);
+                    //更新用户点赞的评论到db
+                    save(userLike);
+                }
             }
-            //更新用户喜欢文章到db
-            saveOrUpdateBatch(userLikes);
         }
-        log.info("time:{},redis数据持久化到mysql定时任务完成",DateUtil.now());
+        //redis获取用户取消点赞的评论添加进中间表
+        Map unlikeMap = redisService.hGetAll(RedisConstant.USER_UNLIKE);
+        if (CollUtil.isNotEmpty(unlikeMap)){
+            Set<Map.Entry<String, Set<Long>>> entries = unlikeMap.entrySet();
+            for (Map.Entry<String, Set<Long>> entry : entries) {
+                for (Long commentId : entry.getValue()) {
+                    UserLike userLike = new UserLike();
+                    userLike.setCommentId(commentId);
+                    userLike.setUserId(Long.parseLong(entry.getKey()));
+                    //删除用户取消点赞的评论到db
+                    remove(new QueryWrapper<>(userLike));
+                }
+            }
+        }
+        //redis 移除数据
+        redisService.del(RedisConstant.USER_LIKE);
+        redisService.del(RedisConstant.USER_UNLIKE);
+        redisService.del(RedisConstant.COMMENT_LIKE_COUNT);
+        log.info("time:{},redis数据持久化到mysql定时任务完成", DateUtil.now());
     }
 }

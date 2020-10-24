@@ -132,12 +132,12 @@ public class RedisServiceImpl implements RedisService {
         return redisTemplate.opsForSet().add(key, values);
     }
 
-    @Override
-    public Long sAdd(String key, long time, Object... values) {
-        Long count = redisTemplate.opsForSet().add(key, values);
-        expire(key, time);
-        return count;
-    }
+//    @Override
+//    public Long sAdd(String key, long time, Object... values) {
+//        Long count = redisTemplate.opsForSet().add(key, values);
+//        expire(key, time);
+//        return count;
+//    }
 
     @Override
     public Boolean sIsMember(String key, Object value) {

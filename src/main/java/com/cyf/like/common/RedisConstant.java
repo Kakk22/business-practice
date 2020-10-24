@@ -8,15 +8,19 @@ package com.cyf.like.common;
  */
 public class RedisConstant {
     /**
-     * 记录单条评价点击过的用户id
+     * 用户点赞的评论 set结构
      */
-    public static final String COMMENT_LIKE = "like:commentId:";
+    public static final String LIKE_COMMENT_USERID = "like:comment:userId:";
     /**
-     * 用户点赞的评论
-     */
-    public static final String USER_LIKE_COMMENT_KEY = "like:user:comment:key";
-    /**
-     *记录评价模块每条评价的点赞总数
+     * 记录评价模块每条评价的点赞总数
      */
     public static final String COMMENT_LIKE_COUNT = "like:commentCount";
+    /**
+     * 记录用户点赞哪些评论 hash结构
+     */
+    public static final String USER_LIKE = "user:like";
+    /**
+     * 记录用户取消点赞哪些评论 用于定时任务时删除数据库中的数据 hash结构
+     */
+    public static final String USER_UNLIKE = "user:unlike";
 }

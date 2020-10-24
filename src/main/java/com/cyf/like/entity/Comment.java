@@ -29,7 +29,7 @@ public class Comment {
     /**
      * 点赞数
      */
-    private Long like;
+    private Integer likeCount;
     /**
      * 课程id
      */
