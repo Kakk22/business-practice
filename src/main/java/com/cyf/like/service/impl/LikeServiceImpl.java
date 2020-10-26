@@ -68,23 +68,23 @@ public class LikeServiceImpl extends ServiceImpl<LikeMapper, UserLike> implement
     @Override
     public void unLike(Long userId, Long commentId) {
         Long count = redisService.sRemove(RedisConstant.LIKE_COMMENT_USERID + userId, commentId);
-        if (count > 0){
+        if (count > 0) {
             //判断user:like 是否有数据
-            Set set = (Set)redisService.hGet(RedisConstant.USER_LIKE,String.valueOf(userId));
-            if (!CollUtil.isEmpty(set)){
-                if (set.remove(commentId)){
+            Set set = (Set) redisService.hGet(RedisConstant.USER_LIKE, String.valueOf(userId));
+            if (!CollUtil.isEmpty(set)) {
+                if (set.remove(commentId)) {
                     return;
                 }
             }
-            set = (Set)redisService.hGet(RedisConstant.USER_UNLIKE, String.valueOf(userId));
-            if (CollUtil.isEmpty(set)){
+            set = (Set) redisService.hGet(RedisConstant.USER_UNLIKE, String.valueOf(userId));
+            if (CollUtil.isEmpty(set)) {
                 set = new HashSet<Long>();
             }
             set.add(commentId);
             //集合为空或者不存在此条记录 则说明取消的是数据库的记录 需记录下来 定时任务删除
-            redisService.hSet(RedisConstant.USER_UNLIKE,String.valueOf(userId),set);
+            redisService.hSet(RedisConstant.USER_UNLIKE, String.valueOf(userId), set);
             //文章总点赞数-1
-            redisService.hDecr(RedisConstant.COMMENT_LIKE_COUNT,String.valueOf(commentId),1L);
+            redisService.hDecr(RedisConstant.COMMENT_LIKE_COUNT, String.valueOf(commentId), 1L);
         }
     }
 
@@ -102,7 +102,7 @@ public class LikeServiceImpl extends ServiceImpl<LikeMapper, UserLike> implement
         //记录用户点赞了哪些评论 key为用户id value set<评价id>         hash结构
         //记录评论点赞总数      key为评价id value 为String 存入redis中 hash结构
         Long count = redisService.sAdd(RedisConstant.LIKE_COMMENT_USERID + userId, commentId);
-        if (count > 0 ) {
+        if (count > 0) {
             //记录用户点赞哪些评论 key为用户id value为Set<评论id>
             Set set = (Set) redisService.hGet(RedisConstant.USER_LIKE, String.valueOf(userId));
             if (CollectionUtil.isEmpty(set)) {
@@ -124,7 +124,7 @@ public class LikeServiceImpl extends ServiceImpl<LikeMapper, UserLike> implement
      */
     //@Scheduled(cron = "0 0/1 * * * ? ")
     //@Scheduled(cron = "0 0 0/2 * * ?")
-    @Scheduled(fixedDelay = 300000)
+    @Scheduled(fixedDelay = 30000)
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void asynchronousUpdate() {
@@ -139,9 +139,9 @@ public class LikeServiceImpl extends ServiceImpl<LikeMapper, UserLike> implement
                 comment.setId(Long.parseLong(entry.getKey()));
                 comment.setLikeCount(entry.getValue());
                 commentList.add(comment);
+                //更新评论点赞数
+                commentService.updateLike(comment);
             }
-            //更新评论点赞数
-            commentService.updateBatchById(commentList);
         }
         //redis获取用户喜欢的评论添加进中间表
         Map likeMap = redisService.hGetAll(RedisConstant.USER_LIKE);
@@ -159,7 +159,7 @@ public class LikeServiceImpl extends ServiceImpl<LikeMapper, UserLike> implement
         }
         //redis获取用户取消点赞的评论添加进中间表
         Map unlikeMap = redisService.hGetAll(RedisConstant.USER_UNLIKE);
-        if (CollUtil.isNotEmpty(unlikeMap)){
+        if (CollUtil.isNotEmpty(unlikeMap)) {
             Set<Map.Entry<String, Set<Long>>> entries = unlikeMap.entrySet();
             for (Map.Entry<String, Set<Long>> entry : entries) {
                 for (Long commentId : entry.getValue()) {

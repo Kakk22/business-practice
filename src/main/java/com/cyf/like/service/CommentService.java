@@ -19,5 +19,5 @@ public interface CommentService {
     /**
      * 定时任务 更新redis 点赞数到mysql
      */
-    void updateLike();
+    void updateLike(Comment comment);
 }

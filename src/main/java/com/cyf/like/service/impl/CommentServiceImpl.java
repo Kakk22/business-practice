@@ -17,9 +17,10 @@ import java.util.List;
 @AllArgsConstructor
 public class CommentServiceImpl extends ServiceImpl<CommentMapper,Comment> implements CommentService {
 
+    private CommentMapper commentMapper;
     @Override
-    public void updateLike() {
-
+    public void updateLike(Comment comment) {
+        commentMapper.updateLikeCount(comment);
     }
 
 
