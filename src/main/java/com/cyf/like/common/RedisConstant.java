@@ -23,4 +23,11 @@ public class RedisConstant {
      * 记录用户取消点赞哪些评论 用于定时任务时删除数据库中的数据 hash结构
      */
     public static final String USER_UNLIKE = "user:unlike";
+
+
+    //------------------- 购物车模块---------------------------
+    /**
+     * 用户购物车key  hash结构 hkey为商品id value为数量
+     */
+    public static final String CART_USER_ID = "cart:user:id";
 }
