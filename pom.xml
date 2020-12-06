@@ -13,6 +13,7 @@
         <module>like-redis</module>
         <module>common</module>
         <module>mq</module>
+        <module>redisson</module>
     </modules>
 
 
