@@ -5,7 +5,7 @@ package com.cyf.common;
  * @date 2020/10/26.
  */
 public class AttentionConstant {
-    public static final String BASE = "cloudClass:";
+    public static final String BASE = "mq:";
     /**
      * 用户关注了那些作者 Set集合 key  value 为作者id
      */

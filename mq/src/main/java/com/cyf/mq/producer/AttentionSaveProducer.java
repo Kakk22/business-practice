@@ -1,6 +1,7 @@
 package com.cyf.mq.producer;
 
 
+import com.cyf.entity.Attention;
 import com.cyf.mq.AttentionSaveMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
@@ -19,8 +20,10 @@ public class AttentionSaveProducer {
 
     public void sendMsg(Long userId, Long authorId) {
         AttentionSaveMessage message = new AttentionSaveMessage();
-        message.setAuthorId(authorId);
-        message.setUserId(userId);
+        Attention attention = new Attention();
+        attention.setAuthorId(authorId);
+        attention.setUserId(userId);
+        message.setAttention(attention);
         rocketMQTemplate.convertAndSend(AttentionSaveMessage.TOPIC, message);
     }
 

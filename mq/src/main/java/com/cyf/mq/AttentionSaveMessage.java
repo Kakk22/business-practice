@@ -1,5 +1,6 @@
 package com.cyf.mq;
 
+import com.cyf.entity.Attention;
 import lombok.Data;
 
 /**
@@ -10,6 +11,5 @@ import lombok.Data;
 public class AttentionSaveMessage {
     public static final String TOPIC = "attentionSave";
 
-    private Long userId;
-    private Long authorId;
+    private Attention attention;
 }

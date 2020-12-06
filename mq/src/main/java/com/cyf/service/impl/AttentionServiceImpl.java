@@ -31,7 +31,6 @@ public class AttentionServiceImpl implements AttentionService {
      */
     @Override
     public void attention(Long userId, Long authorId) {
-        // TODO: 2020/10/27 cyf 验证作者是否存在
         String key = AttentionConstant.ATTENTION_OPEN_ID + userId;
         if (redisService.sAdd(key, authorId) == 0) {
            // Asserts.fail("已经关注过该作者");
