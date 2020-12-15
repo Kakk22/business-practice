@@ -1,4 +1,4 @@
-package com.cyf.Controller;
+package com.cyf.controller;
 
 import com.cyf.service.ProductService;
 import org.springframework.web.bind.annotation.GetMapping;

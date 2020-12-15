@@ -15,7 +15,7 @@ import java.util.concurrent.*;
 @Service
 public class ThreadPoolService {
 
-    private static ThreadFactory nameThreadFactory = new ThreadFactoryBuilder().setNamePrefix("test-pool-%d").build();
+    private static ThreadFactory nameThreadFactory = new ThreadFactoryBuilder().setNamePrefix("threadLocal-pool-%d").build();
 
     /**
      * corePoolSize    线程池核心池的大小

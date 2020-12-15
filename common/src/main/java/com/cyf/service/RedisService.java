@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/** redis 操作Service
+/**
+ * redis 操作Service
+ *
  * @author by cyf
  * @date 2020/9/13.
  */
@@ -179,4 +181,25 @@ public interface RedisService {
      * 从List结构中移除属性
      */
     Long lRemove(String key, long count, Object value);
+
+    /**
+     * 设置bit
+     *
+     * @param key    key
+     * @param offset 偏移量
+     * @param value  值
+     * @return /
+     */
+    Boolean setBit(String key, Long offset, Boolean value);
+
+    /**
+     * 获取对应位图是否有值
+     *
+     * @param key    /
+     * @param offset /
+     * @return /
+     */
+    Boolean getBit(String key, Long offset);
+
+    List<Long> bitfield(String key, int limit, int offset);
 }

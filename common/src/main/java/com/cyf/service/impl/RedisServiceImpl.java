@@ -3,6 +3,8 @@ package com.cyf.service.impl;
 
 import com.cyf.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.BitFieldSubCommands;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -11,9 +13,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-/** Redis 服务实现类
- *  @author by cyf
- *  @date 2020/9/13.
+/**
+ * Redis 服务实现类
+ *
+ * @author by cyf
+ * @date 2020/9/13.
  */
 @Service
 public class RedisServiceImpl implements RedisService {
@@ -197,5 +201,22 @@ public class RedisServiceImpl implements RedisService {
     @Override
     public Long lRemove(String key, long count, Object value) {
         return redisTemplate.opsForList().remove(key, count, value);
+    }
+
+    @Override
+    public Boolean setBit(String key, Long offset, Boolean value) {
+        return redisTemplate.opsForValue().setBit(key, offset, value);
+    }
+
+    @Override
+    public Boolean getBit(String key, Long offset) {
+        return redisTemplate.opsForValue().getBit(key, offset);
+    }
+
+    @Override
+    public List<Long> bitfield(String key, int limit, int offset) {
+        return redisTemplate.execute((RedisCallback<List<Long>>) con -> con.bitField(key.getBytes(),
+                BitFieldSubCommands.create().get(BitFieldSubCommands.BitFieldType.unsigned(limit)).valueAt(offset)
+        ));
     }
 }

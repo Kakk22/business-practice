@@ -14,6 +14,7 @@
         <module>common</module>
         <module>mq</module>
         <module>redisson</module>
+        <module>bitmap-bloomfilter</module>
     </modules>
 
 
@@ -55,14 +56,15 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid-spring-boot-starter</artifactId>
-        </dependency>
+
     </dependencies>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid-spring-boot-starter</artifactId>
+            </dependency>
             <!--通用模块 -->
             <dependency>
                 <groupId>com.cyf.businessParctice</groupId>
