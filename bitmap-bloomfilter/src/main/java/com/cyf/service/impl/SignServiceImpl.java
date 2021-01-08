@@ -5,15 +5,16 @@ import com.cyf.service.RedisService;
 import com.cyf.service.SignService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.TreeMap;
 
 /**
  * 签到实现:
@@ -49,12 +50,7 @@ public class SignServiceImpl implements SignService {
 
     @Override
     public Long getSignCount(Long userId, LocalDate date) {
-        Long result = (Long) redisTemplate.execute(new RedisCallback<Long>() {
-            @Override
-            public Long doInRedis(RedisConnection connection) throws DataAccessException {
-                return connection.bitCount(getKey(userId, date).getBytes());
-            }
-        });
+        Long result = (Long) redisTemplate.execute((RedisCallback<Long>) connection -> connection.bitCount(getKey(userId, date).getBytes()));
         return Optional.ofNullable(result).orElse(0L);
     }
 
@@ -63,7 +59,7 @@ public class SignServiceImpl implements SignService {
      *
      * @param userId /
      * @param date   /
-     * @return
+     * @return 连续签到天数
      */
     @Override
     public long getContinuousSignCount(Long userId, LocalDate date) {
@@ -76,7 +72,9 @@ public class SignServiceImpl implements SignService {
                 //先右移再左移 如果相等则低位为0
                 if (v >> 1 << 1 == v) {
                     // 低位为0且非当天 说明连续签到中断了
-                    if (i > 0) break;
+                    if (i > 0) {
+                        break;
+                    }
                 } else {
                     signCount += 1;
                 }
