@@ -15,6 +15,7 @@
         <module>mq</module>
         <module>redisson</module>
         <module>bitmap-bloomfilter</module>
+        <module>simple-netty</module>
     </modules>
 
 

@@ -11,6 +11,7 @@ public interface ProductService {
      *
      * @param id 商品id
      * @param count     数量
+     * @return  /
      */
     String decrease(Integer id, Integer count);
 }

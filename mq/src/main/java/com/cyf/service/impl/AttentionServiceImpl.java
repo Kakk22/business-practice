@@ -82,11 +82,6 @@ public class AttentionServiceImpl implements AttentionService {
         long count = redisService.sSize(AttentionConstant.ATTENTION_AUTHOR_FANS + authorId);
         Map<String, Object> map = new HashMap<>(2);
         map.put("count", count);
-//        if (type.equals(RequestEnum.PC.getCode())) {
-//            Set<Object> userIds = redisService.sGet(AttentionConstant.ATTENTION_AUTHOR_FANS + authorId);
-//            List<WechatAppletsDto> data = userIds.stream().map(userId -> wechatAppletsService.findByuserId((String) userId)).collect(Collectors.toList());
-//            map.put("data", data);
-//        }
         return map;
     }
 

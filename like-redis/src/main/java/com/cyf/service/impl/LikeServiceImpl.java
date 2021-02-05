@@ -94,7 +94,6 @@ public class LikeServiceImpl extends ServiceImpl<LikeMapper, UserLike> implement
      *
      * @param userId    用户id
      * @param commentId 评价id
-     * @return
      */
     @Override
     public void like(Long userId, Long commentId) {

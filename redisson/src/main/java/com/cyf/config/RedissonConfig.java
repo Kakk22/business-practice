@@ -5,9 +5,6 @@ import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
-
-import java.io.IOException;
 
 /**
  * @author by cyf
@@ -25,7 +22,8 @@ public class RedissonConfig {
     public RedissonClient getRedisson() {
         Config config = new Config();
         config.useSingleServer()
-                .setAddress("redis://47.107.53.172:6379").setPassword("redispassword")
+                //.setAddress("redis://127.0.0.1:6379").setPassword("redispassword")
+                .setAddress("redis://127.0.0.1:6379")
                 .setRetryInterval(5000)
                 .setTimeout(10000)
                 .setConnectTimeout(10000);

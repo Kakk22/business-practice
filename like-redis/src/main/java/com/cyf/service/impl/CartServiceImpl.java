@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * redis实现购物车
  * @author by cyf
  * @date 2020/10/28.
  */
