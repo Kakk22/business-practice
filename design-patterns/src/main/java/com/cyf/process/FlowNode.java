@@ -61,6 +61,9 @@ public class FlowNode {
     public static class NodeConf {
         private int timeout = 100;
 
+        public NodeConf() {
+        }
+
         public NodeConf(int timeout) {
             this.timeout = timeout;
         }

@@ -1,14 +1,15 @@
 package com.cyf.process;
 
-import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Service;
 
 /**
  * @author 陈一锋
  * @date 2021/5/1.
  */
+@Service
 public class BeanService implements ApplicationContextAware {
 
     protected static ApplicationContext applicationContext = null;
@@ -30,17 +31,7 @@ public class BeanService implements ApplicationContextAware {
     @SuppressWarnings("all")
     public static <T> T getSingleBeanByType(Class<T> clazz) throws Exception {
         String[] beanDefinitionNames = applicationContext.getBeanDefinitionNames();
-        for (String beanName : beanDefinitionNames) {
-            Object beanByName = getBeanByName(beanName);
-            if (beanByName != null) {
-                //防止被代理拿不到bean
-                Object target = AopProxyUtils.getSingletonTarget(beanByName);
-                if (clazz.getName().equals(target.getClass().getName())) {
-                    return (T) target;
-                }
-            }
-        }
-        throw new RuntimeException();
+        return applicationContext.getBean(clazz);
     }
 
 }
