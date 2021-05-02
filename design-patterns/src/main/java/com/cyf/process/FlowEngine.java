@@ -150,7 +150,7 @@ public class FlowEngine {
 
     private String getGroupName(String nodeKey) {
         String[] arr = nodeKey.split("_");
-        return arr.length == 2 ? arr[1] : null;
+        return arr.length == 2 ? arr[0] : null;
     }
 
     private String getNodeName(String nodeKey) {
