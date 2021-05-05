@@ -1,4 +1,4 @@
-package com.cyf.config;
+package com.cyf.login.config;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;

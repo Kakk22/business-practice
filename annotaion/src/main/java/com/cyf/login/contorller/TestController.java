@@ -1,6 +1,6 @@
-package com.cyf.contorller;
+package com.cyf.login.contorller;
 
-import com.cyf.annotaion.RequireLogin;
+import com.cyf.login.annotaion.RequireLogin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 

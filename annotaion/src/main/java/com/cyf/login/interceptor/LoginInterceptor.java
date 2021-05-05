@@ -1,6 +1,6 @@
-package com.cyf.interceptor;
+package com.cyf.login.interceptor;
 
-import com.cyf.annotaion.RequireLogin;
+import com.cyf.login.annotaion.RequireLogin;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;

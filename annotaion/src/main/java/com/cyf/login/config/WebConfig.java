@@ -1,6 +1,6 @@
-package com.cyf.config;
+package com.cyf.login.config;
 
-import com.cyf.interceptor.LoginInterceptor;
+import com.cyf.login.interceptor.LoginInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;

@@ -1,4 +1,4 @@
-package com.cyf.config;
+package com.cyf.login.config;
 
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
