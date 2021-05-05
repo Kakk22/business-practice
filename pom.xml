@@ -16,6 +16,8 @@
         <module>redisson</module>
         <module>bitmap-bloomfilter</module>
         <module>simple-netty</module>
+        <module>design-patterns</module>
+        <module>annotaion</module>
     </modules>
 
 
@@ -38,7 +40,7 @@
         <pagehelper-starter.version>1.2.10</pagehelper-starter.version>
         <pagehelper.version>5.1.8</pagehelper.version>
         <druid.version>1.1.10</druid.version>
-        <hutool.version>4.5.7</hutool.version>
+        <hutool.version>5.6.2</hutool.version>
         <mybatis.version>3.4.6</mybatis.version>
         <mybatis-plus.version>3.3.2</mybatis-plus.version>
         <mysql-connector.version>8.0.15</mysql-connector.version>

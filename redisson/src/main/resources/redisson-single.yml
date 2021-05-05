@@ -10,7 +10,7 @@ singleServerConfig:
   password: redispassword
   subscriptionsPerConnection: 5
   clientName: null
-  address: "redis://47.107.53.172:6379"
+  address: "redis://127.0.0.1:6379"
   subscriptionConnectionMinimumIdleSize: 1
   subscriptionConnectionPoolSize: 50
   connectionMinimumIdleSize: 32
