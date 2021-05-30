@@ -1,8 +1,7 @@
 package com.cyf.preventrepeat.annotaion;
 
-import com.cyf.preventrepeat.enums.RepeatLimitTimeLevel;
-
 import java.lang.annotation.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 防止重复提交注解
@@ -16,7 +15,12 @@ import java.lang.annotation.*;
 public @interface PreventRepeatSubmit {
 
     /**
-     * 防重复提交间隔时间
+     * 防重复提交时间
      */
-    RepeatLimitTimeLevel timeLevel() default RepeatLimitTimeLevel.ONE;
+    long time() default 500L;
+
+    /**
+     * 时间类型 默认毫秒
+     */
+    TimeUnit timeUnit() default TimeUnit.MILLISECONDS;
 }

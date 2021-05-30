@@ -49,27 +49,30 @@ public class RepeatAspect {
         Object o = redisService.get(repeatKey);
         if (o != null) {
             //重复提交
-            throw new RuntimeException("重复提交");
+            log.error("重复提交,方法名:{}",method.getName());
+            return null;
         }
 
         //redis自增原子性
         Long count = redisService.incr(repeatKey, 1);
         if (count != 1) {
             //说明重复提交 直接拒绝
-            throw new RuntimeException("重复提交");
+            log.error("重复提交,方法名:{}",method.getName());
+            return null;
         }
 
-        int timeOutMillisecond = preventRepeatSubmit.timeLevel().getMillisecond();
-        redisService.expire(repeatKey, timeOutMillisecond);
-        log.error("设置重复提交key:{},过期时间:{}ms", repeatKey, timeOutMillisecond);
+        boolean expire = redisService.expire(repeatKey, preventRepeatSubmit.time(), preventRepeatSubmit.timeUnit());
+        log.error("设置重复提交key:{},过期时间:{},时间类型:{}", repeatKey, preventRepeatSubmit.time(), preventRepeatSubmit.timeUnit());
 
         Object proceed;
         try {
             proceed = proceedingJoinPoint.proceed();
         } catch (Throwable throwable) {
             log.error(throwable.getMessage());
-            log.error("防重复提交方法出现异常,删除redis中key:{}", repeatKey);
-            redisService.del(repeatKey);
+            if (expire) {
+                log.error("防重复提交方法出现异常,删除redis中key:{}", repeatKey);
+                redisService.del(repeatKey);
+            }
             throw throwable;
         }
 

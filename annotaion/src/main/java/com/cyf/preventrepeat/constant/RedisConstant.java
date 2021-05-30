@@ -19,6 +19,6 @@ public interface RedisConstant {
      * @return key
      */
     static String getRepeatKey(String methodName, String paramsMd5) {
-        return REPEAT_SUBMIT_KEY + methodName + paramsMd5;
+        return REPEAT_SUBMIT_KEY + ":" + methodName + ":" + paramsMd5;
     }
 }

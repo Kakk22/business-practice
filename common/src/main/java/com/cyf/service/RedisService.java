@@ -3,6 +3,7 @@ package com.cyf.service;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * redis 操作Service
@@ -41,6 +42,11 @@ public interface RedisService {
      * 设置过期时间
      */
     Boolean expire(String key, long time);
+
+    /**
+     * 自定义设置过期时间
+     */
+    Boolean expire(String key, long time, TimeUnit timeUnit);
 
     /**
      * 获取过期时间
