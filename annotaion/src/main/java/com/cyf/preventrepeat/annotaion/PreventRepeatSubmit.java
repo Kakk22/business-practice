@@ -23,4 +23,6 @@ public @interface PreventRepeatSubmit {
      * 时间类型 默认毫秒
      */
     TimeUnit timeUnit() default TimeUnit.MILLISECONDS;
+
+    String test() default "";
 }
