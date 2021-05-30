@@ -21,6 +21,4 @@ public class RepeatController {
         System.out.println("请求参数2:" + params2);
         return "success";
     }
-
-    public void t1(){}
 }
