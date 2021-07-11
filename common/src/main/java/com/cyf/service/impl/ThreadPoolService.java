@@ -15,7 +15,9 @@ import java.util.concurrent.*;
 @Service
 public class ThreadPoolService {
 
-    private static ThreadFactory nameThreadFactory = new ThreadFactoryBuilder().setNamePrefix("threadLocal-pool-%d").build();
+    private static ThreadFactory nameThreadFactory = new ThreadFactoryBuilder()
+            .setNamePrefix("threadLocal-pool-%d")
+            .build();
 
     /**
      * corePoolSize    线程池核心池的大小
@@ -47,9 +49,9 @@ public class ThreadPoolService {
     /**
      * 使用线程池创建并异步
      *
-     * @param runnable /
+     * @param callable /
      */
-    public static void newTask(Runnable runnable) {
-        service.submit(runnable);
+    public static <V> Future<V> newTask(Callable<V> callable) {
+        return service.submit(callable);
     }
 }

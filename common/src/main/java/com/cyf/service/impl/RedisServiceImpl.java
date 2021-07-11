@@ -209,6 +209,11 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
+    public Object rPop(String key) {
+        return redisTemplate.opsForList().rightPop(key);
+    }
+
+    @Override
     public Boolean setBit(String key, Long offset, Boolean value) {
         return redisTemplate.opsForValue().setBit(key, offset, value);
     }
@@ -223,5 +228,20 @@ public class RedisServiceImpl implements RedisService {
         return redisTemplate.execute((RedisCallback<List<Long>>) con -> con.bitField(key.getBytes(),
                 BitFieldSubCommands.create().get(BitFieldSubCommands.BitFieldType.unsigned(limit)).valueAt(offset)
         ));
+    }
+
+    @Override
+    public Boolean zSet(String key, Object value, double source) {
+        return redisTemplate.opsForZSet().add(key, value, source);
+    }
+
+    @Override
+    public Set<Object> zRangeScore(String key, double start, double end) {
+        return redisTemplate.opsForZSet().rangeByScore(key, start, end);
+    }
+
+    @Override
+    public Long zRemoveByScore(String key, double start, double end) {
+        return redisTemplate.opsForZSet().removeRangeByScore(key, start, end);
     }
 }

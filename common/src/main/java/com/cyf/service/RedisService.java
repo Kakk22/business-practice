@@ -189,6 +189,14 @@ public interface RedisService {
     Long lRemove(String key, long count, Object value);
 
     /**
+     * list 右边取出元素
+     *
+     * @param key /
+     * @return /
+     */
+    Object rPop(String key);
+
+    /**
      * 设置bit
      *
      * @param key    key
@@ -208,4 +216,29 @@ public interface RedisService {
     Boolean getBit(String key, Long offset);
 
     List<Long> bitfield(String key, int limit, int offset);
+
+    /**
+     * zSet 存入
+     */
+    Boolean zSet(String key, Object value, double source);
+
+    /**
+     * zSet 根据source范围查找
+     *
+     * @param key   key
+     * @param start 开始范围
+     * @param end   结束范围
+     * @return /
+     */
+    Set<Object> zRangeScore(String key, double start, double end);
+
+    /**
+     * zSet移除
+     *
+     * @param key   key
+     * @param start 开始范围
+     * @param end   结束范围
+     * @return /
+     */
+    Long zRemoveByScore(String key, double start, double end);
 }

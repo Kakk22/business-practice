@@ -18,6 +18,7 @@
         <module>simple-netty</module>
         <module>design-patterns</module>
         <module>annotaion</module>
+        <module>delay-message</module>
     </modules>
 
 
